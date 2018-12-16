@@ -1,3 +1,5 @@
+# Enumeration for temperature units
+
 from .base_enum import BaseEnum
 from enum import auto, unique
 

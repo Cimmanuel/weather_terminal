@@ -1,3 +1,5 @@
+# Base enumeration overriding the _generate_next_value method
+
 from enum import Enum
 
 class BaseEnum(Enum):

@@ -1,3 +1,8 @@
+# This parser loader will dynamically discover files
+# in the parsers directory, load them, and make them
+# available to be used by the application without 
+# requiring changes to any other parts of the code.
+ 
 import os
 import re
 import inspect

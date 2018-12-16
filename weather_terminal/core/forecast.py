@@ -1,3 +1,6 @@
+# This is a class representing the weather 
+# forecast data that the parser returns.
+
 from datetime import date
 from .forecast_type import ForecastType
 
@@ -65,4 +68,3 @@ class Forecast:
             f'{offset}Wind: '
             f'{self._wind} / Humidity: {self._humidity}\n'
         )
-        

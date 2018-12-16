@@ -1,3 +1,6 @@
+# This class handles conversions from Celsius
+# to Fahnrenheit and vice-versa.
+
 from .unit import Unit
 
 class UnitConverter:
