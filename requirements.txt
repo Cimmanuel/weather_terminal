@@ -30,4 +30,4 @@ wheel                     0.32.3                   py37_0
 xz                        5.2.4                h14c3975_4  
 zlib                      1.2.11               h7b6447c_3  
 
-phantomjs-2.1.1
+phantomjs                 2.1.1
