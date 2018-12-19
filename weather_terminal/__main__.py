@@ -2,7 +2,10 @@
 
 import sys
 from argparse import ArgumentParser
-from .core import parser_loader, ForecastType, Unit
+from weather_terminal.core import parser_loader
+from weather_terminal.core.forecast_type import ForecastType 
+from weather_terminal.core.unit import Unit
+from weather_terminal.core.set_unit_action import SetUnitAction
 
 def _validate_forecast_args(args):
     if args.forecast_option is None:
@@ -31,7 +34,7 @@ required.add_argument(
 
 unit_values = [name.title() for name, value in Unit.__members__.items()]
 argparser.add_argument(
-    '-u', '--unit', choices=unit_values, required=False, dest='unit',
+    '-u', '--unit', choices=unit_values, required=False, dest='unit', action=SetUnitAction,
     help=('Specify the unit that will be used to display the temperatures.')
 )
 

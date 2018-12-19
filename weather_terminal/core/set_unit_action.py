@@ -1,5 +1,5 @@
 from argparse import Action
-import Unit
+from .unit import Unit
 
 class SetUnitAction(Action):
     def __call__(self, parser, namespace, values, option_string=None):
