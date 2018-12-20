@@ -41,7 +41,7 @@ class WeatherComParser:
 
     def _get_additional_info(self, content):
         data = tuple(item.td.span.get_text() for item in content.table.tbody.children)
-        return data[:2]
+        return data[:5]
 
     def _today_forecast(self, args):
         criteria = {
@@ -63,13 +63,13 @@ class WeatherComParser:
         temp_info = temp_regex.search(weather_info['today_nowcard-hilo'])
         high_temp,low_temp = temp_info.groups()
         side = container.find('div', class_='today_nowcard-sidecar')
-        humidity, wind = self._get_additional_info(side)
+        wind, humidity, dew_point, pressure, visibility = self._get_additional_info(side)
         curr_temp = self._clear_str_number(weather_info['today_nowcard-temp'])
         self._unit_converter.dest_unit = args.unit
         
         td_forecast = Forecast(
             self._unit_converter.convert(curr_temp),
-            wind, humidity,
+            wind, humidity, dew_point, pressure, visibility,
             high_temp=self._unit_converter.convert(high_temp),
             low_temp=self._unit_converter.convert(low_temp),
             description=weather_info['today_nowcard-phrase']

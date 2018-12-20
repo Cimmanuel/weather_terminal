@@ -6,11 +6,14 @@ from .forecast_type import ForecastType
 
 class Forecast:
     def __init__(
-        self, current_temp, humidity, wind, high_temp=None, low_temp=None,
-        description='', forecast_date=None, forecast_type=ForecastType.TODAY):
+        self, current_temp, wind, humidity, dew_point, pressure, visibility, high_temp=None, 
+        low_temp=None, description='', forecast_date=None, forecast_type=ForecastType.TODAY):
         self._current_temp = current_temp
         self._humidity = humidity
         self._wind = wind
+        self._dew_point = dew_point
+        self._pressure = pressure
+        self._visibility = visibility
         self._high_temp = high_temp
         self._low_temp = low_temp
         self._description = description
@@ -26,12 +29,24 @@ class Forecast:
         return self._current_temp
 
     @property
+    def wind(self):
+        return self._wind
+
+    @property
     def humidity(self):
         return self._humidity
 
     @property
-    def wind(self):
-        return self._wind
+    def dew_point(self):
+        return self._dew_point
+
+    @property
+    def pressure(self):
+        return self._pressure
+
+    @property
+    def visibility(self):
+        return self._visibility
 
     @property
     def description(self):
@@ -51,7 +66,7 @@ class Forecast:
         
         if self._forecast_type == ForecastType.TODAY:
             temperature = (
-                f'{offset}{self._current_temp}\xb0\n'
+                f'{offset}Current temperature: {self._current_temp}\xb0\n'
                 f'{offset}High {self._high_temp}\xb0 / '
                 f'Low {self._low_temp}\xb0 '
             )
@@ -65,6 +80,7 @@ class Forecast:
             f'>> {self.forecast_date}\n'
             f'{temperature}'
             f'({self._description})\n'
-            f'{offset}Wind: '
-            f'{self._wind} / Humidity: {self._humidity}\n'
+            f'{offset}Wind: {self._wind} / Humidity: {self._humidity}\n'
+            f'{offset}Dew Point: {self._dew_point} / Pressure: {self._pressure} / Visibility: {self._visibility}\n\n'
+            f'{offset}NB: Dew Point, Pressure, and Visibility will be displayed as though temperature values were in Fahrenheit\n'
         )
