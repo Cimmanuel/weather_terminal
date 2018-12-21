@@ -43,6 +43,49 @@ class WeatherComParser:
         data = tuple(item.td.span.get_text() for item in content.table.tbody.children)
         return data[:5]
 
+    def _parse_list_forecast(self, content, args):
+        criteria = {
+            'date-time': 'span',
+            'day-detail': 'span',
+            'description': 'td',
+            'temp': 'td',
+            'wind': 'td',
+            'humidity': 'td',
+        }
+        bs = BeautifulSoup(content, 'html.parser')
+        forecast_data = bs.find('table', class_='twc-table')
+        container = forecast_data.tbody
+        return self._parse(container, criteria)
+
+    def _prepare_data(self, results, args):
+        forecast_result = []
+        self._unit_converter.dest_unit = args.unit
+        
+        for item in results:
+            match = self._temp_regex.search(item['temp'])
+            if match is not None:
+                high_temp, low_temp = match.groups()
+
+            # try:
+            #     dateinfo = item['weather-cell']
+            #     date_time, day_detail = dateinfo[:3], dateinfo[3:]
+            #     item['date-time'] = date_time
+            #     item['day-detail'] = day_detail
+            # except KeyError:
+            #     pass
+
+            day_forecast = Forecast(
+                self._unit_converter.convert(item['temp']),
+                item['humidity'], item['wind'],
+                high_temp=self._unit_converter.convert(high_temp),
+                low_temp=self._unit_converter.convert(low_temp),
+                description=item['description'].strip(),
+                forecast_date=f"{item['date-time']} {item['day-detail']}",
+                forecast_type=self._forecast_type
+            )
+            forecast_result.append(day_forecast)
+        return forecast_result
+
     def _today_forecast(self, args):
         criteria = {
             'today_nowcard-temp': 'div',
@@ -58,15 +101,18 @@ class WeatherComParser:
             raise Exception('Could not parse weather forecast for today!')
 
         weather_info = weather_conditions[0]
+
         temp_regex = re.compile(('H\s+(\d+|\-{,2}).+'
                                  'L\s+(\d+|\-{,2})'))
         temp_info = temp_regex.search(weather_info['today_nowcard-hilo'])
         high_temp,low_temp = temp_info.groups()
+
         side = container.find('div', class_='today_nowcard-sidecar')
         wind, humidity, dew_point, pressure, visibility = self._get_additional_info(side)
+
         curr_temp = self._clear_str_number(weather_info['today_nowcard-temp'])
-        self._unit_converter.dest_unit = args.unit
         
+        self._unit_converter.dest_unit = args.unit
         td_forecast = Forecast(
             self._unit_converter.convert(curr_temp),
             wind, humidity, dew_point, pressure, visibility,
@@ -74,11 +120,12 @@ class WeatherComParser:
             low_temp=self._unit_converter.convert(low_temp),
             description=weather_info['today_nowcard-phrase']
         )
-
         return [td_forecast]
 
     def _five_and_ten_days_forecast(self, args):
-        raise NotImplementedError()
+        content = self._request.fetch_data(args.forecast_option.value, args.area_code)
+        results = self._parse_list_forecast(content, args)
+        return self._prepare_data(results, args)
 
     def _weekend_forecast(self, args):
         raise NotImplementedError()
