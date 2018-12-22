@@ -57,6 +57,11 @@ argparser.add_argument(
     help=('Show the weather forecast for the next ten days')
 )
 
+argparser.add_argument(
+    '-w', '--weekend', dest='forecast_option', action='store_const', const=ForecastType.WEEKEND,
+    help=('Show the weather forecast for the next or current weekend')
+)
+
 args = argparser.parse_args()
 _validate_forecast_args(args)
 cls = parsers[args.parser]

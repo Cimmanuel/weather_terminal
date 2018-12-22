@@ -7,6 +7,7 @@ from weather_terminal.core.forecast import Forecast
 from weather_terminal.core.request import Request
 from weather_terminal.core.unit import Unit
 from weather_terminal.core.unit_converter import UnitConverter
+from weather_terminal.core.mapper import Mapper
 
 class WeatherComParser:
     def __init__(self):
@@ -66,17 +67,17 @@ class WeatherComParser:
             if match is not None:
                 high_temp, low_temp = match.groups()
 
-            # try:
-            #     dateinfo = item['weather-cell']
-            #     date_time, day_detail = dateinfo[:3], dateinfo[3:]
-            #     item['date-time'] = date_time
-            #     item['day-detail'] = day_detail
-            # except KeyError:
-            #     pass
+            try:
+                dateinfo = item['weather-cell']
+                date_time, day_detail = dateinfo[:3], dateinfo[3:]
+                item['date-time'] = date_time
+                item['day-detail'] = day_detail
+            except KeyError:
+                pass
 
             day_forecast = Forecast(
                 self._unit_converter.convert(item['temp']),
-                item['humidity'], item['wind'],
+                item['wind'], item['humidity'],
                 high_temp=self._unit_converter.convert(high_temp),
                 low_temp=self._unit_converter.convert(low_temp),
                 description=item['description'].strip(),
@@ -128,7 +129,24 @@ class WeatherComParser:
         return self._prepare_data(results, args)
 
     def _weekend_forecast(self, args):
-        raise NotImplementedError()
+        criteria = {
+            'weather-cell': 'header',
+            'temp': 'p',
+            'weather-phrase': 'h3',
+            'wind-conditions': 'p',
+            'humidity': 'p',
+        }
+        mapper = Mapper()
+        mapper.remap_key('wind-conditions', 'wind')
+        mapper.remap_key('weather-phrase', 'description')
+        
+        content = self._request.fetch_data(args.forecast_option.value, args.area_code)
+        bs = BeautifulSoup(content, 'html.parser')
+        forecast_data = bs.find('section', class_='ls-mod')
+        container = forecast_data.div.div
+        partial_results = self._parse(container, criteria)
+        results = mapper.remap(partial_results)
+        return self._prepare_data(results, args)
     
     def run(self, args):
         self._forecast_type = args.forecast_option

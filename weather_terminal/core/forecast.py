@@ -81,7 +81,7 @@ class Forecast:
                 f'Low {self._low_temp}\xb0 '
             )
             dew_pressure_visibility = (
-                f'{offset}Dew Point: Not available / Pressure: Not available / Visibility: Not available\n'
+                f'{offset}Dew Point: N/A / Pressure: N/A / Visibility: N/A\n'
             )
 
         return (
