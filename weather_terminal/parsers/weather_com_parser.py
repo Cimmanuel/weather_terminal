@@ -103,8 +103,8 @@ class WeatherComParser:
 
         weather_info = weather_conditions[0]
 
-        temp_regex = re.compile(('H\s+(\d+|\-{,2}).+'
-                                 'L\s+(\d+|\-{,2})'))
+        temp_regex = re.compile('H\s+(\d+|\-{,2}).+'
+                                'L\s+(\d+|\-{,2})')
         temp_info = temp_regex.search(weather_info['today_nowcard-hilo'])
         high_temp,low_temp = temp_info.groups()
 
@@ -137,8 +137,8 @@ class WeatherComParser:
             'humidity': 'p',
         }
         mapper = Mapper()
-        mapper.remap_key('wind-conditions', 'wind')
         mapper.remap_key('weather-phrase', 'description')
+        mapper.remap_key('wind-conditions', 'wind')
         
         content = self._request.fetch_data(args.forecast_option.value, args.area_code)
         bs = BeautifulSoup(content, 'html.parser')

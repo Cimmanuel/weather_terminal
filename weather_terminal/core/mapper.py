@@ -23,7 +23,7 @@ class Mapper:
         for key, value in src_dict.items():
             try:
                 new_key = self._mapping[key]
-                dest['new_key'] = value
+                dest[new_key] = value
             except KeyError:
                 dest[key] = value
         return dest
